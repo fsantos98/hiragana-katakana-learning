@@ -7,7 +7,7 @@ const characters = {
     "さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と",
     "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ",
     "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り",
-    "る", "れ", "ろ", "わ", "を", "ん", "ゃ", "ゅ", "ょ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
+    "る", "れ", "ろ", "わ", "を", "ん",
     "が", "ぎ", "ぐ", "げ", "ご", "ざ", "じ", "ず", "ぜ", "ぞ",
     "だ", "ぢ", "づ", "で", "ど", "ば", "び", "ぶ", "べ", "ぼ",
     "ぱ", "ぴ", "ぷ", "ぺ", "ぽ"
@@ -17,7 +17,7 @@ const characters = {
     "sa", "shi", "su", "se", "so", "ta", "chi", "tsu", "te", "to",
     "na", "ni", "nu", "ne", "no", "ha", "hi", "fu", "he", "ho",
     "ma", "mi", "mu", "me", "mo", "ya", "yu", "yo", "ra", "ri",
-    "ru", "re", "ro", "wa", "wo", "n", "ya", "yu", "yo", "a", "i", "u", "e", "o",
+    "ru", "re", "ro", "wa", "wo", "n",
     "ga", "gi", "gu", "ge", "go", "za", "ji", "zu", "ze", "zo",
     "da", "ji", "dzu", "de", "do", "ba", "bi", "bu", "be", "bo",
     "pa", "pi", "pu", "pe", "po"
@@ -27,7 +27,7 @@ const characters = {
     "サ", "シ", "ス", "セ", "ソ", "タ", "チ", "ツ", "テ", "ト",
     "ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ", "フ", "ヘ", "ホ",
     "マ", "ミ", "ム", "メ", "モ", "ヤ", "ユ", "ヨ", "ラ", "リ",
-    "ル", "レ", "ロ", "ワ", "ヲ", "ン", "ッ", "ャ", "ュ", "ョ", "ァ", "ィ", "ゥ", "ェ", "ォ",
+    "ル", "レ", "ロ", "ワ", "ヲ", "ン",
     "ガ", "ギ", "グ", "ゲ", "ゴ", "ザ", "ジ", "ズ", "ゼ", "ゾ",
     "ダ", "ヂ", "ヅ", "デ", "ド", "バ", "ビ", "ブ", "ベ", "ボ",
     "パ", "ピ", "プ", "ペ", "ポ"
@@ -41,13 +41,18 @@ const LearnKana = () => {
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [options, setOptions] = useState([]);
   const [userInput, setUserInput] = useState('');
-  const [score, setScore] = useState(0);
-  const [choices, setChoices] = useState({
+  const [score, setScore] = useState(JSON.parse(localStorage.getItem('kanaScore')) || {
+    "hiragana": 0,
+    "katakana": 0,
+    "hiragana_total": 0,
+    "katakana_total": 0
+  });
+  const [choices, setChoices] = useState(JSON.parse(localStorage.getItem('kanaChoices')) || {
     "hiragana": {},
     "katakana": {},
     "romanji": {}
   }); 
-  const [attempt, setAttempt] = useState(0);
+  const [attempt, setAttempt] = useState(parseInt(localStorage.getItem('kanaAttempts')) || 0);
   const [showNotification, setShowNotification] = useState("");
 
   const generateCharacter = () => {
@@ -67,32 +72,9 @@ const LearnKana = () => {
   };
 
   useEffect(() => {
-    console.log("start")
-    const savedScore = localStorage.getItem('kanaScore');
-    if (savedScore) {
-      console.log("score: ", savedScore)
-      setScore(parseInt(savedScore));
-    }
-    const savedkanaChoices = localStorage.getItem('kanaChoices');
-    if (savedkanaChoices) {
-      setChoices(JSON.parse(savedkanaChoices));
-    }
-    const savedkanaAttempts = localStorage.getItem('kanaAttempts');
-    if (savedkanaAttempts) {
-      setAttempt(parseInt(savedkanaAttempts));
-    }
-
-    const results = generateCharacter();
-    setCurrentCharacter(results[0]);
-    setCurrentAnswer(results[1]);
-    setOptions(results[2]);
-  }, [ ]);
-
-  useEffect(() => {
-    console.log("attempt")
-    console.log("score: ", score)
+    console.log("Savind data <<<<<")
     console.log("choices: ", choices)
-    localStorage.setItem('kanaScore', score);
+    localStorage.setItem('kanaScore', JSON.stringify(score));
     localStorage.setItem('kanaChoices', JSON.stringify(choices));
     localStorage.setItem('kanaAttempts', JSON.stringify(attempt));
   }, [attempt]);
@@ -119,9 +101,10 @@ const LearnKana = () => {
       choices[selectedType][currentCharacter] = {"right": 0, "wrong": 0};
     }
     setShowNotification(isCorrect ? "Correct" : "wrong - It was " + currentAnswer);
+    score[selectedType + "_total"] += 1;
     if (isCorrect) {
-      
-      setScore(score + 1);
+      score[selectedType] += 1;
+      setScore(score);
       choices[selectedType][currentCharacter]["right"] += 1;
     }else {
       choices[selectedType][currentCharacter]["wrong"] += 1;
@@ -134,9 +117,7 @@ const LearnKana = () => {
         setCurrentAnswer(results[1]);
         setOptions(results[2]);
         setUserInput('');
-        setChoices(choices);
     
-        setAttempt(attempt + 1);
       }, 4000);
     }else{
       const results = generateCharacter();
@@ -144,12 +125,10 @@ const LearnKana = () => {
       setCurrentAnswer(results[1]);
       setOptions(results[2]);
       setUserInput('');
-      setChoices(choices);
   
-      setAttempt(attempt + 1);
     }
-
-
+    setChoices(choices);
+    setAttempt(attempt + 1);
 
   };
 
@@ -298,7 +277,12 @@ const LearnKana = () => {
 
   const reset = () => {
     console.log("reset")
-    setScore(0);
+    setScore({
+      "hiragana": 0,
+      "katakana": 0,
+      "hiragana_total": 0,
+      "katakana_total": 0
+    });
     setChoices({
       "hiragana": {},
       "katakana": {},
@@ -355,7 +339,8 @@ const LearnKana = () => {
             <button onClick={() => handleOptionClick(userInput)}>Submit</button>
             <button onClick={() => reset()}>Reset All</button>
           </div>
-          <p style={{ marginTop: '20px' }}>Score: {score}/{attempt}</p> {/* Add space between buttons and score */}
+          <div style={{ marginTop: '20px' }}>Score: {score[selectedType]}/{score[selectedType+"_total"]}</div> {/* Add space between buttons and score */}
+          <div>(Total: {score["hiragana"] + score["katakana"]}/{attempt})</div>
           <div style={notificationStyle}>
                    {showNotification}
                   </div>
