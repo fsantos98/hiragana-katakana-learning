@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buttonStyle } from './styles';
 
 const characters = {
   hiragana: [
@@ -32,7 +33,6 @@ const characters = {
     "パ", "ピ", "プ", "ペ", "ポ"
   ]
 };
-const choices = [];
 
 const LearnKana = () => {
   const [selectedType, setSelectedType] = useState('hiragana');
@@ -42,8 +42,16 @@ const LearnKana = () => {
   const [options, setOptions] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [score, setScore] = useState(0);
+  const [choices, setChoices] = useState({
+    "hiragana": {},
+    "katakana": {},
+    "romanji": {}
+  }); 
+  const [attempt, setAttempt] = useState(0);
+  const [showNotification, setShowNotification] = useState("");
 
   const generateCharacter = () => {
+    console.log("selectedType: ", selectedType)
     const randomIndex = Math.floor(Math.random() * characters[selectedType].length);
     const character = characters[selectedType][randomIndex];
     const correctAnswer = characters[selectedTypeN][randomIndex];
@@ -65,6 +73,15 @@ const LearnKana = () => {
       console.log("score: ", savedScore)
       setScore(parseInt(savedScore));
     }
+    const savedkanaChoices = localStorage.getItem('kanaChoices');
+    if (savedkanaChoices) {
+      setChoices(JSON.parse(savedkanaChoices));
+    }
+    const savedkanaAttempts = localStorage.getItem('kanaAttempts');
+    if (savedkanaAttempts) {
+      setAttempt(parseInt(savedkanaAttempts));
+    }
+
     const results = generateCharacter();
     setCurrentCharacter(results[0]);
     setCurrentAnswer(results[1]);
@@ -72,8 +89,13 @@ const LearnKana = () => {
   }, [ ]);
 
   useEffect(() => {
+    console.log("attempt")
+    console.log("score: ", score)
+    console.log("choices: ", choices)
     localStorage.setItem('kanaScore', score);
-  }, [score]);
+    localStorage.setItem('kanaChoices', JSON.stringify(choices));
+    localStorage.setItem('kanaAttempts', JSON.stringify(attempt));
+  }, [attempt]);
 
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -83,17 +105,51 @@ const LearnKana = () => {
     return array;
   };
 
+  useEffect(() => {
+    // notification
+    setTimeout(() => {
+      setShowNotification("");
+    }, 4000);
+  }, [showNotification]);
+
   const handleOptionClick = (option) => {
-    choices.push(currentCharacter);
-    console.log(choices)
-    if (option === currentAnswer) {
-      setScore(score + 1);
+    let isCorrect = option === currentAnswer;
+    // check if option is in choices
+    if (!(currentCharacter in choices[selectedType])){
+      choices[selectedType][currentCharacter] = {"right": 0, "wrong": 0};
     }
-    const results = generateCharacter();
-    setCurrentCharacter(results[0]);
-    setCurrentAnswer(results[1]);
-    setOptions(results[2]);
-    setUserInput('');
+    setShowNotification(isCorrect ? "Correct" : "wrong - It was " + currentAnswer);
+    if (isCorrect) {
+      
+      setScore(score + 1);
+      choices[selectedType][currentCharacter]["right"] += 1;
+    }else {
+      choices[selectedType][currentCharacter]["wrong"] += 1;
+    }
+    if (!isCorrect){
+      // wait for 4 seconds
+      setTimeout(() => {
+        const results = generateCharacter();
+        setCurrentCharacter(results[0]);
+        setCurrentAnswer(results[1]);
+        setOptions(results[2]);
+        setUserInput('');
+        setChoices(choices);
+    
+        setAttempt(attempt + 1);
+      }, 4000);
+    }else{
+      const results = generateCharacter();
+      setCurrentCharacter(results[0]);
+      setCurrentAnswer(results[1]);
+      setOptions(results[2]);
+      setUserInput('');
+      setChoices(choices);
+  
+      setAttempt(attempt + 1);
+    }
+
+
 
   };
 
@@ -139,18 +195,14 @@ const LearnKana = () => {
     margin: '10px 10px', 
   };
 
-  const buttonStyle = {
-    padding: '10px 20px',
-    fontSize: '25px',
-    fontWeight: 'bold',
-    borderRadius: '5px',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s, color 0.3s',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    margin: '10px',
-  };
+  useEffect(() => {
+    const results = generateCharacter();
+    setCurrentCharacter(results[0]);
+    setCurrentAnswer(results[1]);
+    setOptions(results[2]);
+    setUserInput('');
+    setChoices(choices);
+  }, [selectedType]);
   
   // const selectedButtonStyle = {
   //   ...buttonStyle,
@@ -170,7 +222,6 @@ const LearnKana = () => {
     }
     setSelectedTypeN(selectedType);
     setSelectedType(option);
-    generateCharacter();
   }
 
   const boxStyle = {
@@ -192,28 +243,94 @@ const LearnKana = () => {
     borderRadius: '10px',
     backgroundColor: '#f0f0f0',
     flexWrap: 'wrap',
-    width: '80%',
+    width: '56%',
     marginTop: '30px',
   };
   
-const squareStyle = {
-  width: '25px', // Adjust the size of the squares as needed
-  height: '60px',
-  margin: '1px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor:'rgb(199 199 199)',
-};
+  const squareStyle = (color, percentage) => ({
+    width: '35px', // Adjust the size of the squares as needed
+    height: '65px',
+    margin: '1px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'rgb(199 199 199)',
+    backgroundImage: `linear-gradient(to top, ${color} ${percentage}%, transparent ${percentage}%)`,
+  });
 
-const bigCharStyle = {
-  fontSize: '21px', // Adjust the size of the big character as needed
-};
+  const bigCharStyle = {
+    fontSize: '21px', // Adjust the size of the big character as needed
+  };
 
-const smallNumberStyle = {
-  fontSize: '15px', // Adjust the size of the small number as needed
-};
+  const smallNumberStyle = {
+    fontSize: '11px', // Adjust the size of the small number as needed
+  };
+
+  const getPercentage = (value) => {
+    if (!(selectedType in choices)){
+      return -1;
+    }
+    if (choices[selectedType][value] !== undefined){
+      let right = choices[selectedType][value]["right"];
+      let wrong = choices[selectedType][value]["wrong"];
+      let total = right + wrong;
+      if (right === 0){
+        return 0;
+      }
+      return Math.round((right / total) * 100);
+    }
+    return -1;
+  }
+
+  const getcolor = (percentage) => {
+    if (percentage === -1){
+      return "gray";
+    }else if (percentage > 75){
+      return "green";
+    }else if (percentage > 50){
+      return "yellow";
+    }else if (percentage > 25){
+      return "orange";
+    }
+    return "red";
+  }
+
+  const reset = () => {
+    console.log("reset")
+    setScore(0);
+    setChoices({
+      "hiragana": {},
+      "katakana": {},
+      "romanji": {}
+    });
+    setAttempt(0);
+  }
+
+  const notificationStyle = {
+    position: 'absolute',
+    top: '20%',
+    left: '50%',
+    backgroundColor: showNotification.includes("wrong") ? 'red' : 'green', // Change the background color to red (you can change it to any color you like)
+    color: 'white',
+    padding: '10px', // Increase padding for bigger size
+    borderRadius: '10px', // Increase border radius for rounded corners
+
+    fontSize: '30px', // Increase font size for bigger text
+    display: showNotification ? 'block' : 'none'
+  }
+
+  const getValue = (value, side) => {
+    if (choices[selectedType][value] !== undefined){
+      if (side === "right"){
+        return choices[selectedType][value]["right"];
+      }
+      return choices[selectedType][value]["wrong"];
+    }
+    return 0;
+
+  }
+
   return (
     <div style={centerContentStyles}>
       <h1>Learn Hiragana and Katakana</h1>
@@ -236,14 +353,19 @@ const smallNumberStyle = {
           <div style={{ marginTop: '20px' }}> {/* Add space between input and buttons */}
             <input type="text" value={userInput} onChange={handleInputChange} />
             <button onClick={() => handleOptionClick(userInput)}>Submit</button>
+            <button onClick={() => reset()}>Reset All</button>
           </div>
-          <p style={{ marginTop: '20px' }}>Score: {score}</p> {/* Add space between buttons and score */}
+          <p style={{ marginTop: '20px' }}>Score: {score}/{attempt}</p> {/* Add space between buttons and score */}
+          <div style={notificationStyle}>
+                   {showNotification}
+                  </div>
         </div>
         <div style={containerStyle}>
-          {characters["hiragana"].map((value, index) => (
-            <div key={index} style={{ ...squareStyle }}>
+          {characters[selectedType].map((value, index) => (
+            <div key={index} style={{ ...squareStyle(getcolor(getPercentage(value)), getPercentage(value)) }}>
               <div style={bigCharStyle}>{value}</div>
-              {/* <div style={smallNumberStyle}>{index}</div> */}
+              <div style={smallNumberStyle}>{getPercentage(value) == -1 ? 0 : getPercentage(value)}%</div>
+              <div style={smallNumberStyle}>{getValue(value, "right")}/{getValue(value, "right")+getValue(value, "wrong")}</div>
             </div>
           ))}
         </div>
