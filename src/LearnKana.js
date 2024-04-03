@@ -24,7 +24,7 @@ const LearnKana = () => {
   const [attempt, setAttempt] = useState(parseInt(localStorage.getItem('kanaAttempts')) || 0);
   const [showNotification, setShowNotification] = useState("");
   const [showOptions, setShowOptions] = useState("block");
-  const [countTime, setCountTime] = useState(false);
+  const [countTime, setCountTime] = useState(true);
   const [lastActionTimestamp, setLastActionTimestamp] = useState(Math.floor(Date.now()));
   const [showAdvancedInfo, setShowAdvancedInfo] = useState(false);
 
@@ -104,6 +104,7 @@ const LearnKana = () => {
         setOptions(results[2]);
         setUserInput('');
         setInputBlocked(false);
+		setLastActionTimestamp(Math.floor(Date.now()));
       }, 4000);
     } else {
       const results = generateCharacter();
@@ -230,7 +231,7 @@ const LearnKana = () => {
 			<input onClick={() => {
             let countTime_ = !countTime;
             setCountTime(countTime_);
-          }} type="checkbox" id="countTime" name="options" value="options" />
+          }} type="checkbox" id="countTime" name="options" value="options" checked={{countTime}} />
             <span>Count time</span></p>
           <div style={{ display: showOptions }}>
             {options.map((option, index) => (
@@ -260,7 +261,7 @@ const LearnKana = () => {
               <div style={bigCharStyle}>{value}</div>
               <div style={smallNumberStyle}>{getPercentage(value) == -1 ? 0 : getPercentage(value)}%</div>
               <div style={smallNumberStyle}>{getValue(value, "right")}/{getValue(value, "right") + getValue(value, "wrong")}</div>
-			  <div style={smallNumberStyleAdvanced(showAdvancedInfo)}>{choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0} ms</div>
+			  <div style={smallNumberStyleAdvanced(showAdvancedInfo, choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0)}>{choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0} ms</div>
 			</div>
           ))}
         </div>
