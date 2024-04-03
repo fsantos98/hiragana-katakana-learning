@@ -42,6 +42,25 @@ const characterDisplayStyle = {
 const buttonMultipleChoice = {
     margin: '10px',
     fontSize: '35px', // Adjust as needed
+    backgroundColor: '#f0f0f0', // Light gray background
+    color: '#333', // Dark gray text color
+    border: '2px solid #ccc', // Light gray border
+    borderRadius: '8px', // Rounded corners
+    padding: '12px 10px', // Padding for button content
+    cursor: 'pointer', // Cursor style
+    transition: 'all 0.01s ease', // Smooth transition
+};
+
+const handleHover = (e) => {
+    e.target.style.backgroundColor = '#ddd'; // Light gray hover background
+    e.target.style.borderColor = '#999'; // Darker border on hover
+    e.target.style.color = '#222'; // Darker text color on hover
+};
+
+const handleMouseLeave = (e) => {
+    e.target.style.backgroundColor = '#f0f0f0'; // Restore original background color
+    e.target.style.borderColor = '#ccc'; // Restore original border color
+    e.target.style.color = '#333'; // Restore original text color
 };
 
 const char = {
@@ -64,8 +83,9 @@ const containerStyle = {
 };
 
 const squareStyle = (color, percentage) => ({
-    width: '35px', // Adjust the size of the squares as needed
-    height: '65px',
+    width: '50px', // Adjust the size of the squares as needed
+    height: '70px',
+    padding: '5px',
     margin: '1px',
     display: 'flex',
     flexDirection: 'column',
@@ -83,4 +103,11 @@ const squareStyle = (color, percentage) => ({
     fontSize: '11px', // Adjust the size of the small number as needed
   };
 
-export { buttonStyle, centerContentStyles, centerContentStyle2, characterDisplayStyle, buttonMultipleChoice, char, containerStyle, squareStyle, bigCharStyle, smallNumberStyle };
+  const smallNumberStyleAdvanced = (show, value) => ({
+    display: `${show ? '' : 'none'}`,
+    color: `${value > 4000 ? 'red' : 'black'}`,
+    fontSize: '11px',
+  });
+
+  
+export { buttonStyle, smallNumberStyleAdvanced, centerContentStyles, centerContentStyle2, characterDisplayStyle, buttonMultipleChoice, char, containerStyle, squareStyle, bigCharStyle, smallNumberStyle, handleHover, handleMouseLeave };

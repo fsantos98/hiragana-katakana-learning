@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { buttonStyle, centerContentStyles, centerContentStyle2, characterDisplayStyle, buttonMultipleChoice, char, containerStyle, squareStyle, bigCharStyle, smallNumberStyle } from './styles';
+import { buttonStyle, centerContentStyles, smallNumberStyleAdvanced, centerContentStyle2, characterDisplayStyle, buttonMultipleChoice, char, containerStyle, squareStyle, bigCharStyle, smallNumberStyle, handleHover, handleMouseLeave } from './styles';
 import { Characters } from './chars';
 
 const LearnKana = () => {
@@ -20,11 +20,13 @@ const LearnKana = () => {
     "hiragana": {},
     "katakana": {},
     "romanji": {}
-  }); 
+  });
   const [attempt, setAttempt] = useState(parseInt(localStorage.getItem('kanaAttempts')) || 0);
   const [showNotification, setShowNotification] = useState("");
   const [showOptions, setShowOptions] = useState("block");
-  const [lastActionTimestamp, setLastActionTimestamp] = useState(Math.floor(Date.now() / 1000));
+  const [countTime, setCountTime] = useState(false);
+  const [lastActionTimestamp, setLastActionTimestamp] = useState(Math.floor(Date.now()));
+  const [showAdvancedInfo, setShowAdvancedInfo] = useState(false);
 
   const generateCharacter = () => {
     console.log("selectedType: ", selectedType)
@@ -33,9 +35,9 @@ const LearnKana = () => {
     const correctAnswer = Characters[selectedTypeN][randomIndex];
     const shuffledOptions = shuffleArray([...Characters[selectedTypeN]]);
     const finalOptions = shuffledOptions.slice(0, 6);
-    if (!finalOptions.includes(correctAnswer)){
+    if (!finalOptions.includes(correctAnswer)) {
       finalOptions.pop();
-      finalOptions.push(correctAnswer); 
+      finalOptions.push(correctAnswer);
     }
     const finalOptionsArray = shuffleArray(finalOptions);
 
@@ -69,19 +71,30 @@ const LearnKana = () => {
     if (inputBlocked) return;
     let isCorrect = option === currentAnswer;
     // check if option is in choices
-    if (!(currentCharacter in choices[selectedType])){
-      choices[selectedType][currentCharacter] = {"right": 0, "wrong": 0};
+    if (!(currentCharacter in choices[selectedType])) {
+      choices[selectedType][currentCharacter] = { "right": 0, "wrong": 0, "avgSpeed": 0 };
     }
-    setShowNotification(isCorrect ? "Correct" : "wrong - It was " + currentAnswer);
     score[selectedType + "_total"] += 1;
+	let currTime = Math.floor(Date.now());
+	let actionDiffTime = currTime - lastActionTimestamp;
+	setLastActionTimestamp(currTime);
     if (isCorrect) {
       score[selectedType] += 1;
       setScore(score);
       choices[selectedType][currentCharacter]["right"] += 1;
-    }else {
+	  
+	  // IF action diff time is bigger than 10s
+	  if(!(actionDiffTime > 9999) && countTime === true){
+		let oldSpeed = choices[selectedType][currentCharacter]["avgSpeed"];
+		let newAvgSpeed = (oldSpeed + actionDiffTime) / choices[selectedType][currentCharacter]["right"];
+		choices[selectedType][currentCharacter]["avgSpeed"] = newAvgSpeed;
+	  }
+	  
+    } else {
       choices[selectedType][currentCharacter]["wrong"] += 1;
     }
-    if (!isCorrect){
+    setShowNotification(isCorrect ? "Correct - Took " + actionDiffTime + "s"  : "wrong - It was " + currentAnswer);
+    if (!isCorrect) {
       // wait for 4 seconds
       setInputBlocked(true);
       setTimeout(() => {
@@ -92,13 +105,13 @@ const LearnKana = () => {
         setUserInput('');
         setInputBlocked(false);
       }, 4000);
-    }else{
+    } else {
       const results = generateCharacter();
       setCurrentCharacter(results[0]);
       setCurrentAnswer(results[1]);
       setOptions(results[2]);
       setUserInput('');
-  
+
     }
     setChoices(choices);
     setAttempt(attempt + 1);
@@ -109,8 +122,6 @@ const LearnKana = () => {
     setUserInput(e.target.value);
   };
 
-
-
   useEffect(() => {
     const results = generateCharacter();
     setCurrentCharacter(results[0]);
@@ -119,20 +130,20 @@ const LearnKana = () => {
     setUserInput('');
     setChoices(choices);
   }, [selectedType]);
-  
+
   const handleStyleSelection = (option) => {
     setSelectedType(option);
   }
 
   const getPercentage = (value) => {
-    if (!(selectedType in choices)){
+    if (!(selectedType in choices)) {
       return -1;
     }
-    if (choices[selectedType][value] !== undefined){
+    if (choices[selectedType][value] !== undefined) {
       let right = choices[selectedType][value]["right"];
       let wrong = choices[selectedType][value]["wrong"];
       let total = right + wrong;
-      if (right === 0){
+      if (right === 0) {
         return 0;
       }
       return Math.round((right / total) * 100);
@@ -141,13 +152,13 @@ const LearnKana = () => {
   }
 
   const getcolor = (percentage) => {
-    if (percentage === -1){
+    if (percentage === -1) {
       return "gray";
-    }else if (percentage > 75){
+    } else if (percentage > 75) {
       return "green";
-    }else if (percentage > 50){
+    } else if (percentage > 50) {
       return "yellow";
-    }else if (percentage > 25){
+    } else if (percentage > 25) {
       return "orange";
     }
     return "red";
@@ -176,13 +187,12 @@ const LearnKana = () => {
     color: 'white',
     padding: '10px', // Increase padding for bigger size
     borderRadius: '10px', // Increase border radius for rounded corners
-
     fontSize: '30px', // Increase font size for bigger text
     display: showNotification ? 'block' : 'none'
   }
   const getValue = (value, side) => {
-    if (choices[selectedType][value] !== undefined){
-      if (side === "right"){
+    if (choices[selectedType][value] !== undefined) {
+      if (side === "right") {
         return choices[selectedType][value]["right"];
       }
       return choices[selectedType][value]["wrong"];
@@ -209,35 +219,49 @@ const LearnKana = () => {
             </h3>
           </div>
           <h2 style={char}>{currentCharacter}</h2>
-          <p style={{margin: '0px'}}><input onClick={() => {
+          <p style={{ margin: '0px' }}>
+			<input onClick={() => {
             console.log("teste");
             let optionCurrent = showOptions === "block" ? "none" : "block";
             setShowOptions(optionCurrent);
-            }} type="checkbox" id="options" name="options" value="options" />
-          <span>Hide options</span></p>
-          <div style={{display: showOptions}}>
+          }} type="checkbox" id="options" name="options" value="options" />
+            <span>Hide options</span></p>
+			<p style={{ margin: '0px' }}>
+			<input onClick={() => {
+            let countTime_ = !countTime;
+            setCountTime(countTime_);
+          }} type="checkbox" id="countTime" name="options" value="options" />
+            <span>Count time</span></p>
+          <div style={{ display: showOptions }}>
             {options.map((option, index) => (
-              <button disabled={inputBlocked} key={index} style={buttonMultipleChoice} onClick={() => handleOptionClick(option)}>{option}</button>
+              <button disabled={inputBlocked} key={index} style={buttonMultipleChoice} onMouseEnter={handleHover} onMouseLeave={handleMouseLeave} onClick={() => handleOptionClick(option)}>{option}</button>
             ))}
           </div>
           <div style={{ marginTop: '20px' }}> {/* Add space between input and buttons */}
             <input type="text" value={userInput} onChange={handleInputChange} onKeyDown={handleKeyDown} />
-            <button disabled={inputBlocked} onClick={() => handleOptionClick(userInput)}>Submit</button>
+            <button disabled={inputBlocked} onClick={() => handleOptionClick(userInput)} >Submit</button>
             <button onClick={() => reset()}>Reset All</button>
           </div>
-          <div style={{ marginTop: '20px' }}>Score: {score[selectedType]}/{score[selectedType+"_total"]}</div> {/* Add space between buttons and score */}
+          <div style={{ marginTop: '20px' }}>Score: {score[selectedType]}/{score[selectedType + "_total"]}</div> {/* Add space between buttons and score */}
           <div>(Total: {score["hiragana"] + score["katakana"]}/{attempt})</div>
+		  <p style={{ margin: '0px' }}>
+			<input onClick={() => {
+            let optionAdvanced = !showAdvancedInfo;
+            setShowAdvancedInfo(optionAdvanced);
+          }} type="checkbox" id="advanced" name="advanced" value="advanced" />
+            <span>Show advanced</span></p>
           <div style={notificationStyle}>
-                   {showNotification}
-                  </div>
+            {showNotification}
+          </div>
         </div>
         <div style={containerStyle}>
           {Characters[selectedType].map((value, index) => (
             <div key={index} style={{ ...squareStyle(getcolor(getPercentage(value)), getPercentage(value)) }}>
               <div style={bigCharStyle}>{value}</div>
               <div style={smallNumberStyle}>{getPercentage(value) == -1 ? 0 : getPercentage(value)}%</div>
-              <div style={smallNumberStyle}>{getValue(value, "right")}/{getValue(value, "right")+getValue(value, "wrong")}</div>
-            </div>
+              <div style={smallNumberStyle}>{getValue(value, "right")}/{getValue(value, "right") + getValue(value, "wrong")}</div>
+			  <div style={smallNumberStyleAdvanced(showAdvancedInfo)}>{choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0} ms</div>
+			</div>
           ))}
         </div>
       </div>
