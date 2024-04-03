@@ -73,7 +73,7 @@ const LearnKana = () => {
       choices[selectedType][currentCharacter] = {"right": 0, "wrong": 0};
     }
     setShowNotification(isCorrect ? "Correct" : "wrong - It was " + currentAnswer);
-    score[  + "_total"] += 1;
+    score[selectedType + "_total"] += 1;
     if (isCorrect) {
       score[selectedType] += 1;
       setScore(score);
