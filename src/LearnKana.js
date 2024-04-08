@@ -69,10 +69,18 @@ const LearnKana = () => {
 
   const handleOptionClick = (option) => {
     if (inputBlocked) return;
+    console.log(Characters[selectedTypeN])
+    console.log(currentAnswer)
+    const currentAnswerIndex = Characters[selectedTypeN].indexOf(currentAnswer);
+    console.log("Characters[\"mp3\"][currentAnswerIndex]")
+    console.log(currentAnswerIndex)
+    const audio2 = new Audio(Characters["mp3"][currentAnswerIndex]);
+    audio2.play();
+
     let isCorrect = option === currentAnswer;
     // check if option is in choices
     if (!(currentCharacter in choices[selectedType])) {
-      choices[selectedType][currentCharacter] = { "right": 0, "wrong": 0, "avgSpeed": 0 };
+      choices[selectedType][currentCharacter] = { "right": 0, "wrong": 0, "avgSpeed": 0, "right_in_time": 0 };
     }
     score[selectedType + "_total"] += 1;
 	let currTime = Math.floor(Date.now());
@@ -85,9 +93,10 @@ const LearnKana = () => {
 	  
 	  // IF action diff time is bigger than 10s
 	  if(!(actionDiffTime > 9999) && countTime === true){
-		let oldSpeed = choices[selectedType][currentCharacter]["avgSpeed"];
-		let newAvgSpeed = (oldSpeed + actionDiffTime) / choices[selectedType][currentCharacter]["right"];
-		choices[selectedType][currentCharacter]["avgSpeed"] = newAvgSpeed;
+      choices[selectedType][currentCharacter]["right_in_time"] += 1;
+      let oldSpeed = choices[selectedType][currentCharacter]["avgSpeed"];
+      let newAvgSpeed = (oldSpeed + actionDiffTime) / choices[selectedType][currentCharacter]["right_in_time"];
+      choices[selectedType][currentCharacter]["avgSpeed"] = newAvgSpeed;
 	  }
 	  
     } else {
@@ -261,8 +270,8 @@ const LearnKana = () => {
               <div style={bigCharStyle}>{value}</div>
               <div style={smallNumberStyle}>{getPercentage(value) == -1 ? 0 : getPercentage(value)}%</div>
               <div style={smallNumberStyle}>{getValue(value, "right")}/{getValue(value, "right") + getValue(value, "wrong")}</div>
-			  <div style={smallNumberStyleAdvanced(showAdvancedInfo, choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0)}>{choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0} ms</div>
-			</div>
+          <div style={smallNumberStyleAdvanced(showAdvancedInfo, choices[selectedType][value] !== undefined ? choices[selectedType][value]["avgSpeed"] : 0)}>{choices[selectedType][value] !== undefined ? Math.floor(choices[selectedType][value]["avgSpeed"]) : 0} ms</div>
+        </div>
           ))}
         </div>
       </div>
