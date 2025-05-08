@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { buttonStyle, centerContentStyles, smallNumberStyleAdvanced, centerContentStyle2, characterDisplayStyle, buttonMultipleChoice, char, containerStyle, squareStyle, bigCharStyle, smallNumberStyle, handleHover, handleMouseLeave } from './styles';
+import { buttonStyle, centerContentStyles, smallNumberStyleAdvanced, centerContentStyle2, characterDisplayStyle, buttonMultipleChoice, char, containerStyle, squareStyle, bigCharStyle, smallNumberStyle, handleHover, handleMouseLeave, checkboxStyle, inputStyle, submitButtonStyle, resetButtonStyle } from './styles';
 import { Characters } from './chars';
 
 const LearnKana = () => {
@@ -193,13 +193,14 @@ const LearnKana = () => {
     position: 'absolute',
     top: '20%',
     left: '50%',
-    backgroundColor: showNotification.includes("wrong") ? 'red' : 'green', // Change the background color to red (you can change it to any color you like)
-    color: 'white',
-    padding: '10px', // Increase padding for bigger size
-    borderRadius: '10px', // Increase border radius for rounded corners
-    fontSize: '30px', // Increase font size for bigger text
-    display: showNotification ? 'block' : 'none'
-  }
+    backgroundColor: showNotification.includes("wrong") ? '#ff4d4d' : '#4caf50', // Red for wrong, green for correct
+    color: '#ffffff', // White text
+    padding: '10px',
+    borderRadius: '10px',
+    fontSize: '20px',
+    display: showNotification ? 'block' : 'none',
+    transform: 'translate(-50%, -50%)',
+  };
   const getValue = (value, side) => {
     if (choices[selectedType][value] !== undefined) {
       if (side === "right") {
@@ -230,14 +231,14 @@ const LearnKana = () => {
           </div>
           <h2 style={char}>{currentCharacter}</h2>
           <p style={{ margin: '0px' }}>
-			<input onClick={() => {
-            console.log("teste");
-            let optionCurrent = showOptions === "block" ? "none" : "block";
-            setShowOptions(optionCurrent);
-          }} type="checkbox" id="options" name="options" value="options" />
+            <input style={checkboxStyle} onClick={() => {
+              console.log("teste");
+              let optionCurrent = showOptions === "block" ? "none" : "block";
+              setShowOptions(optionCurrent);
+            }} type="checkbox" id="options" name="options" value="options" />
             <span>Hide options</span></p>
 			<p style={{ margin: '0px' }}>
-			<input onClick={() => {
+			<input style={checkboxStyle}  onClick={() => {
             let countTime_ = !countTime;
             setCountTime(countTime_);
           }} type="checkbox" id="countTime" name="options" value="options" checked={{countTime}} />
@@ -248,14 +249,14 @@ const LearnKana = () => {
             ))}
           </div>
           <div style={{ marginTop: '20px' }}> {/* Add space between input and buttons */}
-            <input type="text" value={userInput} onChange={handleInputChange} onKeyDown={handleKeyDown} />
-            <button disabled={inputBlocked} onClick={() => handleOptionClick(userInput)} >Submit</button>
-            <button onClick={() => reset()}>Reset All</button>
+            <input type="text" value={userInput} onChange={handleInputChange} onKeyDown={handleKeyDown} style={inputStyle} />
+            <button disabled={inputBlocked} onClick={() => handleOptionClick(userInput)} style={submitButtonStyle}>Submit</button>
+            <button onClick={() => reset()} style={resetButtonStyle}>Reset All</button>
           </div>
           <div style={{ marginTop: '20px' }}>Score: {score[selectedType]}/{score[selectedType + "_total"]}</div> {/* Add space between buttons and score */}
           <div>(Total: {score["hiragana"] + score["katakana"]}/{attempt})</div>
 		  <p style={{ margin: '0px' }}>
-			<input onClick={() => {
+			<input style={checkboxStyle}  onClick={() => {
             let optionAdvanced = !showAdvancedInfo;
             setShowAdvancedInfo(optionAdvanced);
           }} type="checkbox" id="advanced" name="advanced" value="advanced" />

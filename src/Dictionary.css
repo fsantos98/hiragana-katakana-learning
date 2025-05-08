@@ -1,0 +1,203 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.dictionary-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dictionary-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    margin-bottom: 20px;
+}
+
+.add-word-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.input-field {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 200px;
+}
+
+.add-button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-button:hover {
+    background-color: #45a049;
+}
+
+.random-word-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.random-word-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.random-word-button:hover {
+    background-color: #0056b3;
+}
+
+.random-word-display {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.check-translation-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.check-button {
+    padding: 10px 20px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.check-button:hover {
+    background-color: #e68900;
+}
+
+.dictionary-list-container {
+    margin-top: 20px;
+}
+
+.dictionary-list-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.dictionary-list {
+    list-style: none;
+    padding: 0;
+}
+
+.dictionary-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.word-pair {
+    font-size: 16px;
+    color: #333;
+}
+
+.delete-button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Random Word Section */
+.random-word-section {
+    margin-bottom: 30px;
+    text-align: center;
+    padding: 20px;
+    background-color: #e3f2fd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.random-word {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 10px 0;
+}
+
+.random-word-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.random-word-button:hover {
+    background-color: #0056b3;
+}
+
+.random-word-display {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.check-translation-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.check-button {
+    padding: 10px 20px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.check-button:hover {
+    background-color: #e68900;
+}
