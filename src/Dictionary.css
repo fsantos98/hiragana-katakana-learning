@@ -5,21 +5,24 @@ body {
     padding: 0;
 }
 
+/* Global Styles */
 .dictionary-container {
     max-width: 800px;
     margin: 50px auto;
     padding: 20px;
-    background: #ffffff;
+    background-color: #121212; /* Dark background */
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    color: #ccc; /* Light gray text */
 }
 
 .dictionary-title {
     text-align: center;
-    color: #333;
+    color: #ffffff; /* White text */
     margin-bottom: 20px;
 }
 
+/* Add Word Section */
 .form-container {
     margin-bottom: 20px;
 }
@@ -32,43 +35,64 @@ body {
 
 .input-field {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #444; /* Subtle border */
     border-radius: 5px;
     font-size: 16px;
-    width: 200px;
+    background-color: #2e2e3e; /* Dark gray background */
+    color: #ccc; /* Light gray text */
 }
 
 .add-button {
     padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
+    background-color: #4caf50; /* Green background */
+    color: #ffffff; /* White text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .add-button:hover {
-    background-color: #45a049;
+    background-color: #45a049; /* Darker green on hover */
 }
 
-.random-word-container {
+/* Random Word Section */
+.random-word-section {
+    margin-bottom: 30px;
     text-align: center;
-    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #1e1e2f; /* Slightly lighter dark background */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.section-title {
+    font-size: 20px;
+    color: #ffffff; /* White text */
+    margin-bottom: 15px;
+}
+
+.random-word {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff; /* Blue text for the random word */
+    margin: 10px 0;
 }
 
 .random-word-button {
     padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
+    background-color: #007bff; /* Blue background */
+    color: #ffffff; /* White text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .random-word-button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker blue on hover */
 }
 
 .random-word-display {
@@ -76,6 +100,7 @@ body {
     text-align: center;
 }
 
+/* Check Translation Section */
 .check-translation-form {
     display: flex;
     gap: 10px;
@@ -85,25 +110,27 @@ body {
 
 .check-button {
     padding: 10px 20px;
-    background-color: #ff9800;
-    color: white;
+    background-color: #ff9800; /* Orange background */
+    color: #ffffff; /* White text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .check-button:hover {
-    background-color: #e68900;
+    background-color: #e68900; /* Darker orange on hover */
 }
 
+/* Dictionary List Section */
 .dictionary-list-container {
     margin-top: 20px;
 }
 
 .dictionary-list-title {
     text-align: center;
-    color: #333;
+    color: #ffffff; /* White text */
     margin-bottom: 10px;
 }
 
@@ -117,87 +144,67 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #444; /* Subtle border */
+    color: #ccc; /* Light gray text */
 }
 
 .word-pair {
     font-size: 16px;
-    color: #333;
+    color: #ffffff; /* White text */
 }
 
 .delete-button {
     padding: 5px 10px;
-    background-color: #f44336;
-    color: white;
+    background-color: #f44336; /* Red background */
+    color: #ffffff; /* White text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    transition: background-color 0.3s;
 }
 
 .delete-button:hover {
-    background-color: #d32f2f;
+    background-color: #d32f2f; /* Darker red on hover */
 }
 
-/* Random Word Section */
-.random-word-section {
-    margin-bottom: 30px;
-    text-align: center;
-    padding: 20px;
-    background-color: #e3f2fd;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.section-title {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.random-word {
-    font-size: 24px;
-    font-weight: bold;
-    color: #007bff;
-    margin: 10px 0;
-}
-
-.random-word-button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.random-word-button:hover {
-    background-color: #0056b3;
-}
-
-.random-word-display {
+/* Table Styles */
+.dictionary-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 20px;
-    text-align: center;
-}
-
-.check-translation-form {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-.check-button {
-    padding: 10px 20px;
-    background-color: #ff9800;
-    color: white;
-    border: none;
+    background-color: #1e1e2f; /* Dark background */
+    color: #ccc; /* Light gray text */
+    border: 1px solid #444; /* Subtle border */
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+    overflow: hidden;
 }
 
-.check-button:hover {
-    background-color: #e68900;
+.dictionary-table th,
+.dictionary-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #444; /* Subtle border */
+}
+
+.dictionary-table th {
+    background-color: #2e2e3e; /* Slightly lighter dark background */
+    color: #ffffff; /* White text */
+}
+
+.dictionary-table tr:hover {
+    background-color: #2a2a3a; /* Slightly lighter background on hover */
+}
+
+.dictionary-table td {
+    color: #ccc; /* Light gray text */
+}
+
+.type-select {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #2e2e3e;
+    color: #ccc;
+    font-size: 16px;
 }

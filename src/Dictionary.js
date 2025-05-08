@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './Dictionary.css'; // Import external CSS for better styling
 
+const WordTypes = {
+    WORD: 'Word',
+    PHRASE: 'Phrase',
+    KANJI: 'Kanji',
+};
+
 const Dictionary = () => {
     const [words, setWords] = useState([]);
     const [currentWord, setCurrentWord] = useState({});
     const [englishWord, setEnglishWord] = useState('');
     const [japaneseWord, setJapaneseWord] = useState('');
+    const [wordType, setWordType] = useState(WordTypes.WORD);
 
     // Load words from local storage on component mount
     useEffect(() => {
@@ -21,10 +28,15 @@ const Dictionary = () => {
     const addWord = (event) => {
         event.preventDefault();
         if (englishWord.trim() && japaneseWord.trim()) {
-            const newWord = { word: englishWord.trim(), translation: japaneseWord.trim() };
+            const newWord = {
+                word: englishWord.trim(),
+                translation: japaneseWord.trim(),
+                type: wordType,
+            };
             setWords([newWord, ...words]); // Add new word to the beginning of the array
             setEnglishWord('');
             setJapaneseWord('');
+            setWordType(WordTypes.WORD); // Reset type to default
         }
     };
 
@@ -90,26 +102,49 @@ const Dictionary = () => {
                         onChange={(e) => setJapaneseWord(e.target.value)}
                         className="input-field"
                     />
+                    <select
+                        value={wordType}
+                        onChange={(e) => setWordType(e.target.value)}
+                        className="type-select"
+                    >
+                        <option value={WordTypes.WORD}>Word</option>
+                        <option value={WordTypes.PHRASE}>Phrase</option>
+                        <option value={WordTypes.KANJI}>Kanji</option>
+                    </select>
                     <button type="submit" className="add-button">Add</button>
                 </form>
             </div>
 
-            {/* Dictionary List Section */}
+            {/* Dictionary Table Section */}
             <div className="dictionary-list-container">
                 <h2 className="dictionary-list-title">Your Dictionary</h2>
-                <ul className="dictionary-list">
-                    {words.map((word, index) => (
-                        <li key={index} className="dictionary-list-item">
-                            <span className="word-pair">{word.word} - {word.translation}</span>
-                            <button
-                                onClick={() => deleteWord(index)}
-                                className="delete-button"
-                            >
-                                Delete
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                <table className="dictionary-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>English</th>
+                            <th>Japanese</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {words.map((word, index) => (
+                            <tr key={index}>
+                                <td>{word.type}</td>
+                                <td>{word.word}</td>
+                                <td>{word.translation}</td>
+                                <td>
+                                    <button
+                                        onClick={() => deleteWord(index)}
+                                        className="delete-button"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
