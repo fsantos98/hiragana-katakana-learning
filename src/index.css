@@ -21,3 +21,10 @@ h2 {
   text-align: center;
   color: #ffffff;
 }
+
+.error-message {
+  color: #ff4d4d; /* Red text for error */
+  font-size: 16px;
+  margin-top: 10px;
+  text-align: center;
+}
