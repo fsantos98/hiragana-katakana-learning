@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/hiragana-katakana-learning/static/css/main.e6c13ad2.css",
-    "main.js": "/hiragana-katakana-learning/static/js/main.eba6b786.js",
+    "main.css": "/hiragana-katakana-learning/static/css/main.d272ae3a.css",
+    "main.js": "/hiragana-katakana-learning/static/js/main.591d143d.js",
     "static/media/de.mp3": "/hiragana-katakana-learning/static/media/de.7c11a05a89e88fa61372.mp3",
     "static/media/gi.mp3": "/hiragana-katakana-learning/static/media/gi.3eb0bb8c1460289c8e15.mp3",
     "static/media/dzu.mp3": "/hiragana-katakana-learning/static/media/dzu.37c3a1f97b92574fd0af.mp3",
@@ -73,11 +73,11 @@
     "static/media/te.mp3": "/hiragana-katakana-learning/static/media/te.80f6ed7324b4ad34d380.mp3",
     "static/media/to.mp3": "/hiragana-katakana-learning/static/media/to.4670726cde15a88890c9.mp3",
     "index.html": "/hiragana-katakana-learning/index.html",
-    "main.e6c13ad2.css.map": "/hiragana-katakana-learning/static/css/main.e6c13ad2.css.map",
-    "main.eba6b786.js.map": "/hiragana-katakana-learning/static/js/main.eba6b786.js.map"
+    "main.d272ae3a.css.map": "/hiragana-katakana-learning/static/css/main.d272ae3a.css.map",
+    "main.591d143d.js.map": "/hiragana-katakana-learning/static/js/main.591d143d.js.map"
   },
   "entrypoints": [
-    "static/css/main.e6c13ad2.css",
-    "static/js/main.eba6b786.js"
+    "static/css/main.d272ae3a.css",
+    "static/js/main.591d143d.js"
   ]
 }
