@@ -355,3 +355,40 @@ body {
 .reset-button:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Custom tooltip text */
+.tooltip::after {
+    content: attr(data-tooltip); /* Use the custom data-tooltip attribute */
+    position: absolute;
+    top: -40px; /* Position below the character */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffcc00; /* Bright yellow background for better visibility */
+    color: #000; /* Black text for contrast */
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 28px; /* Larger font size for better readability */
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    z-index: 10;
+    pointer-events: none; /* Prevent interaction with the tooltip */
+    border: 2px solid #000; /* Add a black border for better separation */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Add a shadow for depth */
+}
+
+/* Show the tooltip on hover */
+.tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-5px); /* Slight upward animation */
+}
