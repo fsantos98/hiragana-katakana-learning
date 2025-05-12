@@ -20,6 +20,7 @@ const Dictionary = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // Track if the modal is open
     const [wordToDelete, setWordToDelete] = useState(null); // Track the word to delete
     const [sound, setSound] = useState(''); // State for the sound input
+    const [solutionChecked, setSolutionChecked] = useState(false); // Track if the solution was checked
 
     const romajiMap = {
         // Hiragana
@@ -49,7 +50,7 @@ const Dictionary = () => {
         じゃ: 'ja', じゅ: 'ju', じょ: 'jo',
         びゃ: 'bya', びゅ: 'byu', びょ: 'byo',
         ぴゃ: 'pya', ぴゅ: 'pyu', ぴょ: 'pyo',
-    
+
         // Katakana
         ア: 'a', イ: 'i', ウ: 'u', エ: 'e', オ: 'o',
         カ: 'ka', キ: 'ki', ク: 'ku', ケ: 'ke', コ: 'ko',
@@ -78,7 +79,7 @@ const Dictionary = () => {
         ビャ: 'bya', ビュ: 'byu', ビョ: 'byo',
         ピャ: 'pya', ピュ: 'pyu', ピョ: 'pyo'
     };
-    
+
     // Load words from local storage on component mount
     useEffect(() => {
         const storedWords = JSON.parse(localStorage.getItem('dictionaryWords')) || [];
@@ -89,6 +90,23 @@ const Dictionary = () => {
     useEffect(() => {
         localStorage.setItem('dictionaryWords', JSON.stringify(words));
     }, [words]);
+
+    useEffect(() => {
+        if (words.length > 0 && !currentWord.translation) {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            setCurrentWord(words[randomIndex]); // Set a random word as the current word
+            setSolutionEnabled(false); // Disable the solution button for the new word
+            setNotification(''); // Clear any previous notification
+            setSolutionChecked(false); // Reset the solutionChecked state
+        }
+    }, [words, currentWord.translation]); // Only run when `words` changes and no word is currently set    
+
+    useEffect(() => {
+        if (words.length > 0 && !words.some(word => word.translation === currentWord.translation)) {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            setCurrentWord(words[randomIndex]); // Set a new random word if the current one is deleted
+        }
+    }, [words, currentWord]);
 
     useEffect(() => {
         if (notification) {
@@ -102,39 +120,39 @@ const Dictionary = () => {
 
     const addWord = (event) => {
         event.preventDefault();
-    
+
         if (!englishWord) {
             setErrorMessage('Please provide an English word.');
             return;
         }
-    
+
         if (!japaneseWord) {
             setErrorMessage('Please provide a Japanese word.');
             return;
         }
-    
+
         if (!sound) {
             setErrorMessage('Please provide a sound for the word.');
             return;
         }
-    
+
         // Check if the Japanese word already exists
         const existingWordIndex = words.findIndex(
             (word) => word.translation.toLowerCase() === japaneseWord.trim().toLowerCase()
         );
-    
+
         if (existingWordIndex !== -1) {
             // If the Japanese word exists, add the new English meaning to its meanings array
             const updatedWords = [...words];
             const existingWord = updatedWords[existingWordIndex];
-    
+
             if (!existingWord.word.includes(englishWord.trim().toLowerCase())) {
                 existingWord.word.push(englishWord.trim().toLowerCase());
             } else {
                 setErrorMessage('This meaning already exists for the given Japanese word.');
                 return;
             }
-    
+
             setWords(updatedWords);
         } else {
             // If the Japanese word does not exist, create a new entry
@@ -148,7 +166,7 @@ const Dictionary = () => {
             };
             setWords([newWord, ...words]);
         }
-    
+
         setEnglishWord('');
         setJapaneseWord('');
         setSound('');
@@ -171,28 +189,33 @@ const Dictionary = () => {
         setErrorMessage(''); // Clear any previous error message
         setSolutionEnabled(false); // Disable the solution button for the new word
         setNotification(''); // Clear any previous notification
+        setSolutionChecked(false); // Reset the solutionChecked state
     };
 
     const checkTranslation = (event) => {
         event.preventDefault();
         const userInput = event.target.elements.userTranslation.value.trim().toLowerCase();
         const updatedWords = [...words];
-    
+
         setblockInput(true); // Block input while processing
-    
+
         // Check if the user input matches any of the valid meanings
         if (currentWord.word.includes(userInput)) {
-            setNotification({ message: 'Correct! 🎉', color: 'green' });
-    
-            // Increment correct guesses for the current word
-            const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
-            if (wordIndex !== -1) {
-                updatedWords[wordIndex].correctGuesses += 1;
+            if (!solutionChecked) {
+                setNotification({ message: 'Correct! 🎉', color: 'green' });
+
+                // Increment correct guesses for the current word
+                const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
+                if (wordIndex !== -1) {
+                    updatedWords[wordIndex].correctGuesses += 1;
+                }
+            } else {
+                setNotification({ message: 'Correct, but you checked the solution first.', color: 'orange' });
             }
-    
+
             setSolutionEnabled(false);
             event.target.reset();
-    
+
             // Timer for correct guess (0.5s)
             setTimeout(() => {
                 setNotification('');
@@ -201,27 +224,33 @@ const Dictionary = () => {
             }, 500);
         } else {
             setNotification({ message: 'Incorrect. Try again.', color: 'red' });
-    
+
             // Increment incorrect guesses for the current word
             const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
             if (wordIndex !== -1) {
                 updatedWords[wordIndex].incorrectGuesses += 1;
             }
-    
+
             setSolutionEnabled(true);
-    
+
             // Timer for incorrect guess (2s)
             setTimeout(() => {
                 setNotification('');
                 setblockInput(false); // Re-enable input after notification clears
             }, 2000);
         }
-    
+
         setWords(updatedWords); // Update the words state
     };
 
     const showSolution = () => {
-        setNotification({ message: `The correct translation is: ${currentWord.translation}`, color: 'orange' });
+        if (currentWord.word && currentWord.word.length > 0) {
+            const englishMeanings = currentWord.word.join(', '); // Join all English meanings with commas
+            setNotification({ message: `The correct translation is: ${englishMeanings}`, color: 'orange' });
+            setSolutionChecked(true); // Mark that the solution was checked
+        } else {
+            setNotification({ message: 'No translation available.', color: 'red' });
+        }
     };
 
     const openDeleteModal = (index) => {
@@ -239,7 +268,33 @@ const Dictionary = () => {
         setNotification({ message: 'Win rates have been reset!', color: 'blue' }); // Show a notification
     };
 
-    const getRomajiForChar = (char) => romajiMap[char] || char; // Return the character itself if no mapping exists
+    const getRomajiForChar = (text) => {
+        let romaji = '';
+        for (let i = 0; i < text.length; i++) {
+            // Check for digraphs (two-character combinations)
+            const digraph = text.slice(i, i + 2); // Look at the current and next character
+            if (romajiMap[digraph]) {
+                romaji += romajiMap[digraph]; // Use the digraph mapping
+                i++; // Skip the next character since it's part of the digraph
+            } else {
+                // Fallback to single-character mapping
+                const char = text[i];
+                romaji += romajiMap[char] || char; // Use the single-character mapping or the character itself
+            }
+        }
+        return romaji;
+    };
+
+    const speakWord = (text) => {
+        if (!text) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP'; // Set the language to Japanese
+        utterance.rate = 0.9; // Adjust the speaking rate (optional)
+        utterance.pitch = 1; // Adjust the pitch (optional)
+
+        window.speechSynthesis.speak(utterance);
+    };
 
     return (
         <div className="dictionary-container">
@@ -279,18 +334,52 @@ const Dictionary = () => {
                         <p>{notification.message}</p>
                     </div>
                 )}
-                <h2 className="section-title">Get a Random Word</h2>
-                <button onClick={getRandomWord} className="random-word-button">Get Random Word</button>
                 {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message */}
                 {currentWord.translation && (
                     <div className="random-word-display">
                         <h3 className="random-word">
-                            {currentWord.translation.split('').map((char, index) => (
-                                <span key={index} className="tooltip" data-tooltip={getRomajiForChar(char)}>
-                                    {char}
-                                </span>
-                            ))}
-                        </h3>
+    {(() => {
+        const result = [];
+        let i = 0;
+        while (i < currentWord.translation.length) {
+            // Check if there are at least two characters left for a digraph
+            if (i + 1 < currentWord.translation.length) {
+                const digraph = currentWord.translation.slice(i, i + 2); // Look at the current and next character
+                if (romajiMap[digraph]) {
+                    // If a valid digraph is found
+                    result.push(
+                        <span
+                            key={i}
+                            className="tooltip digraph-highlight"
+                            data-tooltip={romajiMap[digraph]}
+                        >
+                            {digraph}
+                        </span>
+                    );
+                    i += 2; // Skip the next character since it's part of the digraph
+                    continue; // Skip to the next iteration
+                }
+            }
+
+            // Fallback to single-character mapping
+            const char = currentWord.translation[i];
+            result.push(
+                <span
+                    key={i}
+                    className="tooltip char-highlight"
+                    data-tooltip={romajiMap[char] || char}
+                >
+                    {char}
+                </span>
+            );
+            i++; // Move to the next character
+        }
+        return result;
+    })()}
+</h3>
+                        <button onClick={() => speakWord(currentWord.translation)} className="speaker-button">
+                            🔊 Speak
+                        </button>
                         <form onSubmit={checkTranslation} className="check-translation-form">
                             <input
                                 type="text"

@@ -356,10 +356,59 @@ body {
     background-color: #0056b3; /* Darker blue on hover */
 }
 
+.speaker-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #007bff; /* Blue background */
+    color: #fff; /* White text */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.speaker-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Highlight for digraphs */
+.digraph-highlight {
+    color: #fff; /* White text for contrast */
+    padding: 4px 6px;
+    border-radius: 4px;
+    margin: 0 2px;
+    display: inline-block;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+/* Highlight for single characters */
+.char-highlight {
+    color: #fff; /* White text for contrast */
+    padding: 4px 6px;
+    border-radius: 4px;
+    margin: 0 2px;
+    display: inline-block;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect for digraphs */
+.digraph-highlight:hover {
+    background-color: #ffcc00; /* Gold background on hover */
+    color: #000; /* Black text for contrast */
+}
+
+/* Hover effect for single characters */
+.char-highlight:hover {
+    background-color: #87ceeb; /* Light blue background on hover */
+    color: #000; /* Black text for contrast */
+}
+
 /* Tooltip container */
 .tooltip {
     position: relative;
-    display: inline-block;
     cursor: pointer;
 }
 
@@ -367,14 +416,14 @@ body {
 .tooltip::after {
     content: attr(data-tooltip); /* Use the custom data-tooltip attribute */
     position: absolute;
-    top: -40px; /* Position below the character */
+    bottom: -40px; /* Position below the character */
     left: 50%;
     transform: translateX(-50%);
-    background-color: #ffcc00; /* Bright yellow background for better visibility */
-    color: #000; /* Black text for contrast */
-    padding: 10px 15px;
+    background-color: #333; /* Dark background */
+    color: #fff; /* White text */
+    padding: 8px 12px;
     border-radius: 8px;
-    font-size: 28px; /* Larger font size for better readability */
+    font-size: 14px;
     font-weight: bold;
     white-space: nowrap;
     opacity: 0;
@@ -382,7 +431,6 @@ body {
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     z-index: 10;
     pointer-events: none; /* Prevent interaction with the tooltip */
-    border: 2px solid #000; /* Add a black border for better separation */
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Add a shadow for depth */
 }
 
