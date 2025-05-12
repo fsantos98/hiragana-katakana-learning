@@ -21,6 +21,7 @@ const Dictionary = () => {
     const [wordToDelete, setWordToDelete] = useState(null); // Track the word to delete
     const [sound, setSound] = useState(''); // State for the sound input
     const [solutionChecked, setSolutionChecked] = useState(false); // Track if the solution was checked
+    const [recentWords, setRecentWords] = useState([]); // Track recently displayed words
 
     const romajiMap = {
         // Hiragana
@@ -184,8 +185,38 @@ const Dictionary = () => {
             setErrorMessage('No words available. Please add some words first.'); // Set error message
             return;
         }
-        const randomIndex = Math.floor(Math.random() * words.length);
-        setCurrentWord(words[randomIndex]); // Set the current word
+    
+        // Determine the maximum number of recent words to track
+        const maxRecentWords = Math.min(10, words.length - 1);
+    
+        // Filter out recently displayed words
+        const availableWords = words.filter(
+            (word) => !recentWords.includes(word.translation)
+        );
+    
+        // If all words are in the recentWords list, reset the recentWords array
+        if (availableWords.length === 0) {
+            setRecentWords([]);
+            return getRandomWord(); // Retry with an empty recentWords list
+        }
+    
+        // Select a random word from the available words
+        const randomIndex = Math.floor(Math.random() * availableWords.length);
+        const selectedWord = availableWords[randomIndex];
+    
+        // Update the current word
+        setCurrentWord(selectedWord);
+    
+        // Update the recentWords array
+        setRecentWords((prevRecentWords) => {
+            const updatedRecentWords = [...prevRecentWords, selectedWord.translation];
+            if (updatedRecentWords.length > maxRecentWords) {
+                updatedRecentWords.shift(); // Remove the oldest word if the limit is exceeded
+            }
+            return updatedRecentWords;
+        });
+    
+        // Reset other states
         setErrorMessage(''); // Clear any previous error message
         setSolutionEnabled(false); // Disable the solution button for the new word
         setNotification(''); // Clear any previous notification
