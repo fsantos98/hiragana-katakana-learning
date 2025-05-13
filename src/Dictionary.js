@@ -121,53 +121,38 @@ const Dictionary = () => {
 
     const addWord = (event) => {
         event.preventDefault();
-
-        if (!englishWord) {
-            setErrorMessage('Please provide an English word.');
+    
+        if (!englishWord || !japaneseWord || !sound) {
+            setErrorMessage('Please fill out all fields.');
             return;
         }
-
-        if (!japaneseWord) {
-            setErrorMessage('Please provide a Japanese word.');
-            return;
-        }
-
-        if (!sound) {
-            setErrorMessage('Please provide a sound for the word.');
-            return;
-        }
-
-        // Check if the Japanese word already exists
-        const existingWordIndex = words.findIndex(
-            (word) => word.translation.toLowerCase() === japaneseWord.trim().toLowerCase()
-        );
-
-        if (existingWordIndex !== -1) {
-            // If the Japanese word exists, add the new English meaning to its meanings array
-            const updatedWords = [...words];
-            const existingWord = updatedWords[existingWordIndex];
-
-            if (!existingWord.word.includes(englishWord.trim().toLowerCase())) {
-                existingWord.word.push(englishWord.trim().toLowerCase());
-            } else {
-                setErrorMessage('This meaning already exists for the given Japanese word.');
-                return;
-            }
-
-            setWords(updatedWords);
+    
+        const updatedWords = [...words];
+    
+        if (wordToDelete !== null) {
+            // Update the existing word
+            updatedWords[wordToDelete] = {
+                ...updatedWords[wordToDelete],
+                word: englishWord.split(',').map((w) => w.trim().toLowerCase()),
+                translation: japaneseWord.trim(),
+                sound: sound.trim(),
+                type: wordType,
+            };
+            setWordToDelete(null); // Reset after editing
         } else {
-            // If the Japanese word does not exist, create a new entry
+            // Add a new word
             const newWord = {
-                word: [englishWord.trim().toLowerCase()], // Store meanings as an array
+                word: [englishWord.trim().toLowerCase()],
                 translation: japaneseWord.trim(),
                 sound: sound.trim(),
                 type: wordType,
                 correctGuesses: 0,
                 incorrectGuesses: 0,
             };
-            setWords([newWord, ...words]);
+            updatedWords.unshift(newWord);
         }
-
+    
+        setWords(updatedWords);
         setEnglishWord('');
         setJapaneseWord('');
         setSound('');
@@ -327,6 +312,15 @@ const Dictionary = () => {
         window.speechSynthesis.speak(utterance);
     };
 
+    const editWord = (index) => {
+        const wordToEdit = words[index];
+        setJapaneseWord(wordToEdit.translation);
+        setSound(wordToEdit.sound);
+        setEnglishWord(wordToEdit.word.join(', '));
+        setWordType(wordToEdit.type);
+        setWordToDelete(index); // Reuse `wordToDelete` to track the word being edited
+    };    
+
     return (
         <div className="dictionary-container">
             {isModalOpen && (
@@ -439,8 +433,13 @@ const Dictionary = () => {
 
             {/* Add Word Section */}
             <div className="form-container">
-                <h2 className="section-title">Add a New Word</h2>
-                <form onSubmit={addWord} className="add-word-form">
+                <h2 className="section-title">
+                    {wordToDelete !== null ? 'Edit Word' : 'Add a New Word'}
+                </h2>
+                <form
+                    onSubmit={addWord}
+                    className={`add-word-form ${wordToDelete !== null ? 'editing' : ''}`}
+                >
                     <input
                         type="text"
                         placeholder="Japanese Word"
@@ -471,7 +470,9 @@ const Dictionary = () => {
                         <option value={WordTypes.PHRASE}>Phrase</option>
                         <option value={WordTypes.KANJI}>Kanji</option>
                     </select>
-                    <button type="submit" className="add-button">Add</button>
+                    <button type="submit" className="add-button">
+                        {wordToDelete !== null ? 'Save Changes' : 'Add'}
+                    </button>
                 </form>
             </div>
 
@@ -514,6 +515,11 @@ const Dictionary = () => {
                                         </div>
                                     </td>
                                     <td>
+                                        <i
+                                            className="edit-icon"
+                                            onClick={() => editWord(index)}
+                                            title="Edit"
+                                        >✏️</i>
                                         <i
                                             className="delete-icon"
                                             onClick={() => openDeleteModal(index)}
