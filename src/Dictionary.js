@@ -121,14 +121,14 @@ const Dictionary = () => {
 
     const addWord = (event) => {
         event.preventDefault();
-    
+
         if (!englishWord || !japaneseWord || !sound) {
             setErrorMessage('Please fill out all fields.');
             return;
         }
-    
+
         const updatedWords = [...words];
-    
+
         if (wordToDelete !== null) {
             // Update the existing word
             updatedWords[wordToDelete] = {
@@ -151,7 +151,7 @@ const Dictionary = () => {
             };
             updatedWords.unshift(newWord);
         }
-    
+
         setWords(updatedWords);
         setEnglishWord('');
         setJapaneseWord('');
@@ -170,28 +170,28 @@ const Dictionary = () => {
             setErrorMessage('No words available. Please add some words first.'); // Set error message
             return;
         }
-    
+
         // Determine the maximum number of recent words to track
         const maxRecentWords = Math.min(10, words.length - 1);
-    
+
         // Filter out recently displayed words
         const availableWords = words.filter(
             (word) => !recentWords.includes(word.translation)
         );
-    
+
         // If all words are in the recentWords list, reset the recentWords array
         if (availableWords.length === 0) {
             setRecentWords([]);
             return getRandomWord(); // Retry with an empty recentWords list
         }
-    
+
         // Select a random word from the available words
         const randomIndex = Math.floor(Math.random() * availableWords.length);
         const selectedWord = availableWords[randomIndex];
-    
+
         // Update the current word
         setCurrentWord(selectedWord);
-    
+
         // Update the recentWords array
         setRecentWords((prevRecentWords) => {
             const updatedRecentWords = [...prevRecentWords, selectedWord.translation];
@@ -200,7 +200,7 @@ const Dictionary = () => {
             }
             return updatedRecentWords;
         });
-    
+
         // Reset other states
         setErrorMessage(''); // Clear any previous error message
         setSolutionEnabled(false); // Disable the solution button for the new word
@@ -319,7 +319,7 @@ const Dictionary = () => {
         setEnglishWord(wordToEdit.word.join(', '));
         setWordType(wordToEdit.type);
         setWordToDelete(index); // Reuse `wordToDelete` to track the word being edited
-    };    
+    };
 
     return (
         <div className="dictionary-container">
@@ -363,45 +363,45 @@ const Dictionary = () => {
                 {currentWord.translation && (
                     <div className="random-word-display">
                         <h3 className="random-word">
-    {(() => {
-        const result = [];
-        let i = 0;
-        while (i < currentWord.translation.length) {
-            // Check if there are at least two characters left for a digraph
-            if (i + 1 < currentWord.translation.length) {
-                const digraph = currentWord.translation.slice(i, i + 2); // Look at the current and next character
-                if (romajiMap[digraph]) {
-                    // If a valid digraph is found
-                    result.push(
-                        <span
-                            key={i}
-                            className="tooltip digraph-highlight"
-                            data-tooltip={romajiMap[digraph]}
-                        >
-                            {digraph}
-                        </span>
-                    );
-                    i += 2; // Skip the next character since it's part of the digraph
-                    continue; // Skip to the next iteration
-                }
-            }
+                            {(() => {
+                                const result = [];
+                                let i = 0;
+                                while (i < currentWord.translation.length) {
+                                    // Check if there are at least two characters left for a digraph
+                                    if (i + 1 < currentWord.translation.length) {
+                                        const digraph = currentWord.translation.slice(i, i + 2); // Look at the current and next character
+                                        if (romajiMap[digraph]) {
+                                            // If a valid digraph is found
+                                            result.push(
+                                                <span
+                                                    key={i}
+                                                    className="tooltip digraph-highlight"
+                                                    data-tooltip={romajiMap[digraph]}
+                                                >
+                                                    {digraph}
+                                                </span>
+                                            );
+                                            i += 2; // Skip the next character since it's part of the digraph
+                                            continue; // Skip to the next iteration
+                                        }
+                                    }
 
-            // Fallback to single-character mapping
-            const char = currentWord.translation[i];
-            result.push(
-                <span
-                    key={i}
-                    className="tooltip char-highlight"
-                    data-tooltip={romajiMap[char] || char}
-                >
-                    {char}
-                </span>
-            );
-            i++; // Move to the next character
-        }
-        return result;
-    })()}
-</h3>
+                                    // Fallback to single-character mapping
+                                    const char = currentWord.translation[i];
+                                    result.push(
+                                        <span
+                                            key={i}
+                                            className="tooltip char-highlight"
+                                            data-tooltip={romajiMap[char] || char}
+                                        >
+                                            {char}
+                                        </span>
+                                    );
+                                    i++; // Move to the next character
+                                }
+                                return result;
+                            })()}
+                        </h3>
                         <button onClick={() => speakWord(currentWord.translation)} className="speaker-button">
                             🔊 Speak
                         </button>
