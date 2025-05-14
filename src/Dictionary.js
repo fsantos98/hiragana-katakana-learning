@@ -321,6 +321,47 @@ const Dictionary = () => {
         setWordToDelete(index); // Reuse `wordToDelete` to track the word being edited
     };
 
+    const renderTranslationWithTooltips = (translation, romajiMap) => {
+        const result = [];
+        let i = 0;
+
+        while (i < translation.length) {
+            // Check if there are at least two characters left for a digraph
+            if (i + 1 < translation.length) {
+                const digraph = translation.slice(i, i + 2); // Look at the current and next character
+                if (romajiMap[digraph]) {
+                    // If a valid digraph is found
+                    result.push(
+                        <span
+                            key={i}
+                            className="tooltip digraph-highlight"
+                            data-tooltip={romajiMap[digraph]}
+                        >
+                            {digraph}
+                        </span>
+                    );
+                    i += 2; // Skip the next character since it's part of the digraph
+                    continue; // Skip to the next iteration
+                }
+            }
+
+            // Fallback to single-character mapping
+            const char = translation[i];
+            result.push(
+                <span
+                    key={i}
+                    className="tooltip char-highlight"
+                    data-tooltip={romajiMap[char] || char}
+                >
+                    {char}
+                </span>
+            );
+            i++; // Move to the next character
+        }
+
+        return result;
+    };
+
     return (
         <div className="dictionary-container">
             {isModalOpen && (
@@ -363,44 +404,7 @@ const Dictionary = () => {
                 {currentWord.translation && (
                     <div className="random-word-display">
                         <h3 className="random-word">
-                            {(() => {
-                                const result = [];
-                                let i = 0;
-                                while (i < currentWord.translation.length) {
-                                    // Check if there are at least two characters left for a digraph
-                                    if (i + 1 < currentWord.translation.length) {
-                                        const digraph = currentWord.translation.slice(i, i + 2); // Look at the current and next character
-                                        if (romajiMap[digraph]) {
-                                            // If a valid digraph is found
-                                            result.push(
-                                                <span
-                                                    key={i}
-                                                    className="tooltip digraph-highlight"
-                                                    data-tooltip={romajiMap[digraph]}
-                                                >
-                                                    {digraph}
-                                                </span>
-                                            );
-                                            i += 2; // Skip the next character since it's part of the digraph
-                                            continue; // Skip to the next iteration
-                                        }
-                                    }
-
-                                    // Fallback to single-character mapping
-                                    const char = currentWord.translation[i];
-                                    result.push(
-                                        <span
-                                            key={i}
-                                            className="tooltip char-highlight"
-                                            data-tooltip={romajiMap[char] || char}
-                                        >
-                                            {char}
-                                        </span>
-                                    );
-                                    i++; // Move to the next character
-                                }
-                                return result;
-                            })()}
+                            {renderTranslationWithTooltips(currentWord.translation, romajiMap)}
                         </h3>
                         <button onClick={() => speakWord(currentWord.translation)} className="speaker-button">
                             🔊 Speak
