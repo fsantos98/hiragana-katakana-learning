@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './Dictionary.css'; // Import external CSS for better styling
+import Input from './components/Input';
+import './Dictionary.css';
 
 const WordTypes = {
     WORD: 'Word',
@@ -22,6 +23,8 @@ const Dictionary = () => {
     const [sound, setSound] = useState(''); // State for the sound input
     const [solutionChecked, setSolutionChecked] = useState(false); // Track if the solution was checked
     const [recentWords, setRecentWords] = useState([]); // Track recently displayed words
+    const [userTranslation, setUserTranslation] = useState(''); // State for user input
+
 
     const romajiMap = {
         // Hiragana
@@ -210,17 +213,15 @@ const Dictionary = () => {
 
     const checkTranslation = (event) => {
         event.preventDefault();
-        const userInput = event.target.elements.userTranslation.value.trim().toLowerCase();
+        const userInput = userTranslation.trim().toLowerCase();
         const updatedWords = [...words];
-
+    
         setblockInput(true); // Block input while processing
 
-        // Check if the user input matches any of the valid meanings
         if (currentWord.word.includes(userInput)) {
             if (!solutionChecked) {
                 setNotification({ message: 'Correct! 🎉', color: 'green' });
 
-                // Increment correct guesses for the current word
                 const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
                 if (wordIndex !== -1) {
                     updatedWords[wordIndex].correctGuesses += 1;
@@ -230,18 +231,16 @@ const Dictionary = () => {
             }
 
             setSolutionEnabled(false);
-            event.target.reset();
+            setUserTranslation(''); // Clear the input field
 
-            // Timer for correct guess (0.5s)
             setTimeout(() => {
                 setNotification('');
-                setblockInput(false); // Re-enable input after notification clears
-                getRandomWord(); // Fetch a new random word
+                setblockInput(false);
+                getRandomWord();
             }, 500);
         } else {
             setNotification({ message: 'Incorrect. Try again.', color: 'red' });
 
-            // Increment incorrect guesses for the current word
             const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
             if (wordIndex !== -1) {
                 updatedWords[wordIndex].incorrectGuesses += 1;
@@ -249,14 +248,13 @@ const Dictionary = () => {
 
             setSolutionEnabled(true);
 
-            // Timer for incorrect guess (2s)
             setTimeout(() => {
                 setNotification('');
-                setblockInput(false); // Re-enable input after notification clears
+                setblockInput(false);
             }, 2000);
         }
 
-        setWords(updatedWords); // Update the words state
+        setWords(updatedWords);
     };
 
     const showSolution = () => {
@@ -410,11 +408,10 @@ const Dictionary = () => {
                             🔊 Speak
                         </button>
                         <form onSubmit={checkTranslation} className="check-translation-form">
-                            <input
-                                type="text"
-                                name="userTranslation"
-                                placeholder="Enter English Translation"
-                                className="input-field"
+                            <Input
+                                placeholder='Enter Japanese Translation'
+                                value={userTranslation}
+                                onChange={(e) => setUserTranslation(e.target.value)}
                             />
                             <button
                                 type="submit"
