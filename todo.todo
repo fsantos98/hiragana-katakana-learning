@@ -1,0 +1,14 @@
+Working:
+    ☐ Simplify inputs
+        - https://www.dhiwise.com/post/a-step-by-step-guide-to-retrieving-input-values-in-react
+    
+    ☐ Add top 100 words
+        - https://www.japanesepod101.com/japanese-word-lists/?search=
+
+
+Backlog:
+    ☐ Add last x words and the result (guessed right or wrong)
+    ☐ Add cloudflare tracking 
+        ☐ Even consider others like google analytics if it's free
+    ☐ Add a versining page to maintain track of what was changed
+    ☐ Create a way to export/import word lists
