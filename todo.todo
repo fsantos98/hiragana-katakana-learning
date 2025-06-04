@@ -8,7 +8,17 @@ Working:
 
 Backlog:
     ☐ Add last x words and the result (guessed right or wrong)
-    ☐ Add cloudflare tracking 
-        ☐ Even consider others like google analytics if it's free
     ☐ Add a versining page to maintain track of what was changed
     ☐ Create a way to export/import word lists
+    ☐ Add a way to create groups of chars so that the user can select only a subset of the hiragana/katakana
+        I might even need to change how the screen looks and works, this is because it would be easier to have a mode that allows for both hiragana and katagana at the same time. Currently, the user can only select on of the two.
+    ☐ It probably should be nice to have some default Dictionary groups, like the N5, N4, N3, N2, N1
+        https://github.com/elzup/jlpt-word-list?tab=readme-ov-file
+    ☐ Should I use next js?
+        - https://github.com/nextjs/deploy-github-pages
+    ☐ Editing the current word does not update the solution immediately
+        - Reproduction: 
+            1. Get a word to solve
+            2. Edit the word tha is currently in the solve panel
+            3. Try to solve it. The solution for the word does not update immediately. The user needs to input the old solution and only then the new solution can be used.
+    
