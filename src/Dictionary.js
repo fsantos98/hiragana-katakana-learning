@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './Dictionary.css'; // Import external CSS for better styling
+import Input from './components/Input';
+import './Dictionary.css';
 
 const WordTypes = {
     WORD: 'Word',
@@ -10,8 +11,6 @@ const WordTypes = {
 const Dictionary = () => {
     const [words, setWords] = useState([]);
     const [currentWord, setCurrentWord] = useState({});
-    const [englishWord, setEnglishWord] = useState('');
-    const [japaneseWord, setJapaneseWord] = useState('');
     const [wordType, setWordType] = useState(WordTypes.WORD);
     const [errorMessage, setErrorMessage] = useState(''); // State for error message
     const [notification, setNotification] = useState(''); // State for pop-up notification
@@ -19,10 +18,22 @@ const Dictionary = () => {
     const [blockInput, setblockInput] = useState(false); // State for enabling the solution button
     const [isModalOpen, setIsModalOpen] = useState(false); // Track if the modal is open
     const [wordToDelete, setWordToDelete] = useState(null); // Track the word to delete
-    const [sound, setSound] = useState(''); // State for the sound input
     const [solutionChecked, setSolutionChecked] = useState(false); // Track if the solution was checked
     const [recentWords, setRecentWords] = useState([]); // Track recently displayed words
+    const [userTranslation, setUserTranslation] = useState(''); // State for user input
+    const [addWordformData, setAddWordformData] = useState({
+        englishWord: '',
+        japaneseWord: '',
+        sound: '',
+        wordType: WordTypes.WORD,
+    });
 
+    useEffect(() => {
+        // print user translation when it changes
+        console.log('User Translation:', userTranslation);
+    }
+    , [userTranslation]);
+    
     const romajiMap = {
         // Hiragana
         あ: 'a', い: 'i', う: 'u', え: 'e', お: 'o',
@@ -119,8 +130,18 @@ const Dictionary = () => {
         }
     }, [notification]);
 
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setAddWordformData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    }
+
     const addWord = (event) => {
         event.preventDefault();
+
+        const { englishWord, japaneseWord, sound } = addWordformData;
 
         if (!englishWord || !japaneseWord || !sound) {
             setErrorMessage('Please fill out all fields.');
@@ -153,10 +174,12 @@ const Dictionary = () => {
         }
 
         setWords(updatedWords);
-        setEnglishWord('');
-        setJapaneseWord('');
-        setSound('');
-        setWordType(WordTypes.WORD);
+        setAddWordformData({
+            englishWord: '',
+            japaneseWord: '',
+            sound: '',
+            wordType: WordTypes.WORD,
+        });
         setErrorMessage('');
     };
 
@@ -210,17 +233,15 @@ const Dictionary = () => {
 
     const checkTranslation = (event) => {
         event.preventDefault();
-        const userInput = event.target.elements.userTranslation.value.trim().toLowerCase();
+        const userInput = userTranslation.trim().toLowerCase();
         const updatedWords = [...words];
-
+    
         setblockInput(true); // Block input while processing
 
-        // Check if the user input matches any of the valid meanings
         if (currentWord.word.includes(userInput)) {
             if (!solutionChecked) {
                 setNotification({ message: 'Correct! 🎉', color: 'green' });
 
-                // Increment correct guesses for the current word
                 const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
                 if (wordIndex !== -1) {
                     updatedWords[wordIndex].correctGuesses += 1;
@@ -230,18 +251,16 @@ const Dictionary = () => {
             }
 
             setSolutionEnabled(false);
-            event.target.reset();
+            setUserTranslation(''); // Clear the input field
 
-            // Timer for correct guess (0.5s)
             setTimeout(() => {
                 setNotification('');
-                setblockInput(false); // Re-enable input after notification clears
-                getRandomWord(); // Fetch a new random word
+                setblockInput(false);
+                getRandomWord();
             }, 500);
         } else {
             setNotification({ message: 'Incorrect. Try again.', color: 'red' });
 
-            // Increment incorrect guesses for the current word
             const wordIndex = updatedWords.findIndex((word) => word.translation === currentWord.translation);
             if (wordIndex !== -1) {
                 updatedWords[wordIndex].incorrectGuesses += 1;
@@ -249,14 +268,13 @@ const Dictionary = () => {
 
             setSolutionEnabled(true);
 
-            // Timer for incorrect guess (2s)
             setTimeout(() => {
                 setNotification('');
-                setblockInput(false); // Re-enable input after notification clears
+                setblockInput(false);
             }, 2000);
         }
 
-        setWords(updatedWords); // Update the words state
+        setWords(updatedWords);
     };
 
     const showSolution = () => {
@@ -284,6 +302,7 @@ const Dictionary = () => {
         setNotification({ message: 'Win rates have been reset!', color: 'blue' }); // Show a notification
     };
 
+    // eslint-disable-next-line no-unused-vars
     const getRomajiForChar = (text) => {
         let romaji = '';
         for (let i = 0; i < text.length; i++) {
@@ -314,11 +333,13 @@ const Dictionary = () => {
 
     const editWord = (index) => {
         const wordToEdit = words[index];
-        setJapaneseWord(wordToEdit.translation);
-        setSound(wordToEdit.sound);
-        setEnglishWord(wordToEdit.word.join(', '));
-        setWordType(wordToEdit.type);
-        setWordToDelete(index); // Reuse `wordToDelete` to track the word being edited
+        setAddWordformData({
+            englishWord: wordToEdit.word.join(', '),
+            japaneseWord: wordToEdit.translation,
+            sound: wordToEdit.sound,
+            wordType: wordToEdit.type,
+        });
+        setWordToDelete(index);
     };
 
     const renderTranslationWithTooltips = (translation, romajiMap) => {
@@ -410,11 +431,10 @@ const Dictionary = () => {
                             🔊 Speak
                         </button>
                         <form onSubmit={checkTranslation} className="check-translation-form">
-                            <input
-                                type="text"
-                                name="userTranslation"
-                                placeholder="Enter English Translation"
-                                className="input-field"
+                            <Input
+                                placeholder='Enter Japanese Translation'
+                                value={userTranslation}
+                                onChange={(e) => setUserTranslation(e.target.value)}
                             />
                             <button
                                 type="submit"
@@ -444,26 +464,23 @@ const Dictionary = () => {
                     onSubmit={addWord}
                     className={`add-word-form ${wordToDelete !== null ? 'editing' : ''}`}
                 >
-                    <input
-                        type="text"
-                        placeholder="Japanese Word"
-                        value={japaneseWord}
-                        onChange={(e) => setJapaneseWord(e.target.value)}
-                        className="input-field"
+                    <Input
+                        name="japaneseWord"
+                        placeholder='Japanese Word'
+                        value={addWordformData.japaneseWord}
+                        onChange={handleInputChange}
                     />
-                    <input
-                        type="text"
+                    <Input
+                        name="sound"
                         placeholder="Sound (e.g., kuma)"
-                        value={sound}
-                        onChange={(e) => setSound(e.target.value)}
-                        className="input-field"
+                        value={addWordformData.sound}
+                        onChange={handleInputChange}
                     />
-                    <input
-                        type="text"
+                    <Input
+                        name="englishWord"
                         placeholder="English Word"
-                        value={englishWord}
-                        onChange={(e) => setEnglishWord(e.target.value)}
-                        className="input-field"
+                        value={addWordformData.englishWord}
+                        onChange={handleInputChange}
                     />
                     <select
                         value={wordType}
