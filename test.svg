@@ -1,0 +1,56 @@
+<svg width="400" height="250"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <script><![CDATA[
+    function showScreen(id) {
+      document.getElementById('screen1').style.display = 'none';
+      document.getElementById('screen2').style.display = 'none';
+      document.getElementById(id).style.display = 'block';
+    }
+  ]]></script>
+
+  <!-- Screen 1 -->
+  <g id="screen1">
+    <rect width="400" height="250" fill="#4CAF50"/>
+    <text x="200" y="120"
+          text-anchor="middle"
+          font-size="24"
+          fill="white">
+      Screen 1
+    </text>
+  </g>
+
+  <!-- Screen 2 -->
+  <g id="screen2" style="display:none;">
+    <rect width="400" height="250" fill="#2196F3"/>
+    <text x="200" y="120"
+          text-anchor="middle"
+          font-size="24"
+          fill="white">
+      Screen 2
+    </text>
+  </g>
+
+  <!-- Button 1 -->
+  <g onclick="showScreen('screen1')" cursor="pointer">
+    <rect x="50" y="200" width="120" height="30" fill="#333" rx="5"/>
+    <text x="110" y="220"
+          text-anchor="middle"
+          fill="white"
+          font-size="14">
+      Show Screen 1
+    </text>
+  </g>
+
+  <!-- Button 2 -->
+  <g onclick="showScreen('screen2')" cursor="pointer">
+    <rect x="230" y="200" width="120" height="30" fill="#333" rx="5"/>
+    <text x="290" y="220"
+          text-anchor="middle"
+          fill="white"
+          font-size="14">
+      Show Screen 2
+    </text>
+  </g>
+
+</svg>
